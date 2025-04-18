@@ -1,0 +1,1545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive Tire Analysis Dashboard</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.5;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f8fa;
+        }
+        .card {
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background-color: white;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        .card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            background-color: #f8fafc;
+        }
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+            color: #2d3748;
+        }
+        .card-subtitle {
+            font-size: 14px;
+            color: #718096;
+            margin-top: 4px;
+        }
+        .card-content {
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+        }
+        th {
+            background-color: #f7fafc;
+            text-align: left;
+            font-weight: 600;
+            color: #4a5568;
+        }
+        thead th {
+            font-weight: 600;
+        }
+        tbody tr:hover {
+            background-color: #f9fafb;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .font-bold {
+            font-weight: 600;
+        }
+        .bg-gray-50 {
+            background-color: #f9fafb;
+        }
+        .bg-blue-50 {
+            background-color: #ebf5ff;
+        }
+        .bg-green-50 {
+            background-color: #f0fff4;
+        }
+        .bg-yellow-50 {
+            background-color: #fffbeb;
+        }
+        .bg-red-50 {
+            background-color: #fff5f5;
+        }
+        .space-y-8 > * + * {
+            margin-top: 32px;
+        }
+        .section-note {
+            font-style: italic;
+            color: #718096;
+            margin-bottom: 12px;
+            font-size: 14px;
+            padding: 8px 12px;
+            background-color: #ebf8ff;
+            border-left: 4px solid #4299e1;
+            border-radius: 4px;
+        }
+        .dashboard-header {
+            background-color: #2c5282;
+            color: white;
+            padding: 24px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+        .dashboard-title {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        .dashboard-subtitle {
+            margin-top: 8px;
+            font-size: 16px;
+            font-weight: 400;
+            opacity: 0.9;
+        }
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .stat-title {
+            font-size: 14px;
+            color: #718096;
+            margin-bottom: 8px;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 4px;
+        }
+        .stat-desc {
+            font-size: 12px;
+            color: #a0aec0;
+        }
+        .positive-change {
+            color: #48bb78;
+        }
+        .negative-change {
+            color: #f56565;
+        }
+        /* New tab implementation */
+        .tabs-container {
+            margin-bottom: 16px;
+        }
+        .tabs-nav {
+            display: flex;
+            border-bottom: 1px solid #e2e8f0;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .tab-button {
+            padding: 10px 16px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            font-weight: 500;
+            color: #718096;
+            background: none;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+            font-size: 16px;
+        }
+        .tab-button.active {
+            border-color: #4299e1;
+            color: #4299e1;
+        }
+        .tab-panel {
+            display: none;
+            padding: 16px 0;
+        }
+        .tab-panel.active {
+            display: block;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+        .recommendation-item {
+            margin-bottom: 16px;
+            padding: 12px;
+            background-color: #f7fafc;
+            border-left: 3px solid #4299e1;
+            border-radius: 4px;
+        }
+        .recommendation-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2d3748;
+        }
+        .recommendation-desc {
+            font-size: 14px;
+            color: #4a5568;
+        }
+        .profit-high {
+            background-color: #c6f6d5;
+        }
+        .profit-medium {
+            background-color: #fefcbf;
+        }
+        .profit-low {
+            background-color: #fed7d7;
+        }
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">Comprehensive Tire Margin Analysis</h1>
+        <div class="dashboard-subtitle">Detailed breakdown for Gambia and Senegal markets - April 2025</div>
+    </div>
+
+    <div class="stats-container">
+        <div class="stat-card">
+            <div class="stat-title">Overall Margin</div>
+            <div class="stat-value">42.89%</div>
+            <div class="stat-desc">Combined across all tire categories</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-title">Gambia Market Margin</div>
+            <div class="stat-value">44.32%</div>
+            <div class="stat-desc">Average across all tire categories</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-title">Senegal Market Margin</div>
+            <div class="stat-value">41.72%</div>
+            <div class="stat-desc">Average across all tire categories</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-title">Most Profitable Category</div>
+            <div class="stat-value">22.5" Commercial</div>
+            <div class="stat-desc">62.81% margin after full cost allocation</div>
+        </div>
+    </div>
+
+    <!-- New more reliable tab structure -->
+    <div class="tabs-container">
+        <ul class="tabs-nav" role="tablist">
+            <li role="presentation">
+                <button class="tab-button active" data-tab="0" role="tab">Passenger Tire Analysis</button>
+            </li>
+            <li role="presentation">
+                <button class="tab-button" data-tab="1" role="tab">Commercial Tire Analysis</button>
+            </li>
+            <li role="presentation">
+                <button class="tab-button" data-tab="2" role="tab">Cost Structure</button>
+            </li>
+            <li role="presentation">
+                <button class="tab-button" data-tab="3" role="tab">Market Comparison</button>
+            </li>
+            <li role="presentation">
+                <button class="tab-button" data-tab="4" role="tab">Recommendations</button>
+            </li>
+        </ul>
+    </div>
+    
+    <div class="space-y-8">
+        <!-- Passenger Tire Analysis -->
+        <div class="tab-panel active" role="tabpanel">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Passenger Tire Margin Analysis</h2>
+                    <div class="card-subtitle">After comprehensive cost allocation including all operational costs, financing, and freight</div>
+                </div>
+                <div class="card-content">
+                    <p class="section-note">Base costs have been adjusted to achieve target weighted averages for each rim size category. All calculations include operational costs (which now include container receiving), financing costs, and freight.</p>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr class="bg-gray-50">
+                                    <th>Size</th>
+                                    <th class="text-right">Base Cost ($)</th>
+                                    <th class="text-right">Freight Cost ($)</th>
+                                    <th class="text-right">Bundling/ Packing ($)</th>
+                                    <th class="text-right">CIF Cost ($)</th>
+                                    <th class="text-right">Operational Cost ($)</th>
+                                    <th class="text-right">Financing Cost ($)</th>
+                                    <th class="text-right">Total Cost ($)</th>
+                                    <th class="text-right">Wholesale Price ($)</th>
+                                    <th class="text-right">Margin (%)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>13"</td>
+                                    <td class="text-right">$1.25</td>
+                                    <td class="text-right">$1.60</td>
+                                    <td class="text-right">$0.25</td>
+                                    <td class="text-right">$3.10</td>
+                                    <td class="text-right">$3.62</td>
+                                    <td class="text-right">$0.45</td>
+                                    <td class="text-right">$7.17</td>
+                                    <td class="text-right">$9.58</td>
+                                    <td class="text-right">25.16%</td>
+                                </tr>
+                                <tr>
+                                    <td>14"</td>
+                                    <td class="text-right">$2.00</td>
+                                    <td class="text-right">$1.82</td>
+                                    <td class="text-right">$0.25</td>
+                                    <td class="text-right">$4.07</td>
+                                    <td class="text-right">$3.69</td>
+                                    <td class="text-right">$0.53</td>
+                                    <td class="text-right">$8.29</td>
+                                    <td class="text-right">$13.30</td>
+                                    <td class="text-right">37.67%</td>
+                                </tr>
+                                <tr>
+                                    <td>15"</td>
+                                    <td class="text-right">$2.50</td>
+                                    <td class="text-right">$2.22</td>
+                                    <td class="text-right">$0.25</td>
+                                    <td class="text-right">$4.97</td>
+                                    <td class="text-right">$3.82</td>
+                                    <td class="text-right">$0.57</td>
+                                    <td class="text-right">$9.36</td>
+                                    <td class="text-right">$16.15</td>
+                                    <td class="text-right">42.04%</td>
+                                </tr>
+                                <tr>
+                                    <td>16"</td>
+                                    <td class="text-right">$2.75</td>
+                                    <td class="text-right">$2.67</td>
+                                    <td class="text-right">$0.25</td>
+                                    <td class="text-right">$5.67</td>
+                                    <td class="text-right">$3.85</td>
+                                    <td class="text-right">$0.57</td>
+                                    <td class="text-right">$10.09</td>
+                                    <td class="text-right">$15.87</td>
+                                    <td class="text-right">36.42%</td>
+                                </tr>
+                                <tr>
+                                    <td>17"</td>
+                                    <td class="text-right">$3.00</td>
+                                    <td class="text-right">$3.33</td>
+                                    <td class="text-right">$0.25</td>
+                                    <td class="text-right">$6.58</td>
+                                    <td class="text-right">$4.08</td>
+                                    <td class="text-right">$0.54</td>
+                                    <td class="text-right">$11.20</td>
+                                    <td class="text-right">$14.52</td>
+                                    <td class="text-right">22.87%</td>
+                                </tr>
+                                <tr>
+                                    <td>18"</td>
+                                    <td class="text-right">$3.10</td>
+                                    <td class="text-right">$4.00</td>
+                                    <td class="text-right">$0.25</td>
+                                    <td class="text-right">$7.35</td>
+                                    <td class="text-right">$4.13</td>
+                                    <td class="text-right">$0.69</td>
+                                    <td class="text-right">$12.17</td>
+                                    <td class="text-right">$16.70</td>
+                                    <td class="text-right">27.13%</td>
+                                </tr>
+                                <tr>
+                                    <td>19"</td>
+                                    <td class="text-right">$4.10</td>
+                                    <td class="text-right">$5.00</td>
+                                    <td class="text-right">$0.50</td>
+                                    <td class="text-right">$9.60</td>
+                                    <td class="text-right">$4.49</td>
+                                    <td class="text-right">$0.86</td>
+                                    <td class="text-right">$14.95</td>
+                                    <td class="text-right">$22.99</td>
+                                    <td class="text-right">34.97%</td>
+                                </tr>
+                                <tr>
+                                    <td>20"</td>
+                                    <td class="text-right">$4.50</td>
+                                    <td class="text-right">$6.67</td>
+                                    <td class="text-right">$0.75</td>
+                                    <td class="text-right">$11.92</td>
+                                    <td class="text-right">$4.61</td>
+                                    <td class="text-right">$1.00</td>
+                                    <td class="text-right">$17.53</td>
+                                    <td class="text-right">$23.59</td>
+                                    <td class="text-right">25.69%</td>
+                                </tr>
+                                <tr>
+                                    <td>21"</td>
+                                    <td class="text-right">$5.00</td>
+                                    <td class="text-right">$8.00</td>
+                                    <td class="text-right">$1.25</td>
+                                    <td class="text-right">$14.25</td>
+                                    <td class="text-right">$4.71</td>
+                                    <td class="text-right">$1.14</td>
+                                    <td class="text-right">$20.10</td>
+                                    <td class="text-right">$28.57</td>
+                                    <td class="text-right">29.65%</td>
+                                </tr>
+                                <tr class="font-bold bg-gray-50">
+                                    <td>Weighted Average</td>
+                                    <td class="text-right">$2.91</td>
+                                    <td class="text-right">$3.03</td>
+                                    <td class="text-right">$0.37</td>
+                                    <td class="text-right">$6.31</td>
+                                    <td class="text-right">$3.91</td>
+                                    <td class="text-right">$0.65</td>
+                                    <td class="text-right">$10.87</td>
+                                    <td class="text-right">$16.85</td>
+                                    <td class="text-right">35.49%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Passenger Tire Size Analysis</h2>
+                    <div class="card-subtitle">Detailed breakdown by specific tire sizes with problematic sizes highlighted</div>
+                </div>
+                <div class="card-content">
+                    <p class="section-note">Problem sizes are highlighted in red where margins fall below 10%. These sizes require immediate price adjustments or should be considered for discontinuation.</p>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr class="bg-gray-50">
+                                    <th>Size</th>
+                                    <th class="text-right">Base Cost ($)</th>
+                                    <th class="text-right">CIF Cost ($)</th>
+                                    <th class="text-right">Total Cost ($)</th>
+                                    <th class="text-right">Wholesale Price ($)</th>
+                                    <th class="text-right">Margin (%)</th>
+                                    <th class="text-right">Gambia Price ($)</th>
+                                    <th class="text-right">Senegal Price ($)</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>175/70R14</td>
+                                    <td class="text-right">$1.00</td>
+                                    <td class="text-right">$3.07</td>
+                                    <td class="text-right">$7.05</td>
+                                    <td class="text-right">$7.86</td>
+                                    <td class="text-right">10.31%</td>
+                                    <td class="text-right">$7.86</td>
+                                    <td class="text-right">-</td>
+                                    <td class="profit-medium">Low Margin</td>
+                                </tr>
+                                <tr>
+                                    <td>195/65R15</td>
+                                    <td class="text-right">$1.75</td>
+                                    <td class="text-right">$4.22</td>
+                                    <td class="text-right">$8.40</td>
+                                    <td class="text-right">$10.47</td>
+                                    <td class="text-right">19.77%</td>
+                                    <td class="text-right">-</td>
+                                    <td class="text-right">$10.47</td>
+                                    <td class="profit-medium">Acceptable</td>
+                                </tr>
+                                <tr>
+                                    <td>205/70R15</td>
+                                    <td class="text-right">$3.92</td>
+                                    <td class="text-right">$6.39</td>
+                                    <td class="text-right">$11.02</td>
+                                    <td class="text-right">$22.69</td>
+                                    <td class="text-right">51.43%</td>
+                                    <td class="text-right">$14.29</td>
+                                    <td class="text-right">$22.69</td>
+                                    <td class="profit-high">High Profit</td>
+                                </tr>
+                                <tr>
+                                    <td>195/75R16</td>
+                                    <td class="text-right">$1.00</td>
+                                    <td class="text-right">$3.92</td>
+                                    <td class="text-right">$8.03</td>
+                                    <td class="text-right">$8.57</td>
+                                    <td class="text-right">6.30%</td>
+                                    <td class="text-right">$8.57</td>
+                                    <td class="text-right">-</td>
+                                    <td class="profit-low">Problem Size</td>
+                                </tr>
+                                <tr>
+                                    <td>215/75R16</td>
+                                    <td class="text-right">$1.00</td>
+                                    <td class="text-right">$3.92</td>
+                                    <td class="text-right">$8.03</td>
+                                    <td class="text-right">$8.57</td>
+                                    <td class="text-right">6.30%</td>
+                                    <td class="text-right">$8.57</td>
+                                    <td class="text-right">-</td>
+                                    <td class="profit-low">Problem Size</td>
+                                </tr>
+                                <tr>
+                                    <td>225/45R17</td>
+                                    <td class="text-right">$1.22</td>
+                                    <td class="text-right">$4.80</td>
+                                    <td class="text-right">$9.18</td>
+                                    <td class="text-right">$10.00</td>
+                                    <td class="text-right">8.20%</td>
+                                    <td class="text-right">$10.00</td>
+                                    <td class="text-right">-</td>
+                                    <td class="profit-low">Problem Size</td>
+                                </tr>
+                                <tr>
+                                    <td>235/65R17</td>
+                                    <td class="text-right">$2.96</td>
+                                    <td class="text-right">$6.54</td>
+                                    <td class="text-right">$11.25</td>
+                                    <td class="text-right">$15.71</td>
+                                    <td class="text-right">28.39%</td>
+                                    <td class="text-right">$15.71</td>
+                                    <td class="text-right">-</td>
+                                    <td class="profit-medium">Acceptable</td>
+                                </tr>
+                                <tr>
+                                    <td>245/45R18</td>
+                                    <td class="text-right">$1.57</td>
+                                    <td class="text-right">$5.82</td>
+                                    <td class="text-right">$10.51</td>
+                                    <td class="text-right">$11.71</td>
+                                    <td class="text-right">10.25%</td>
+                                    <td class="text-right">$11.71</td>
+                                    <td class="text-right">-</td>
+                                    <td class="profit-medium">Low Margin</td>
+                                </tr>
+                                <tr>
+                                    <td>255/50R19</td>
+                                    <td class="text-right">$4.63</td>
+                                    <td class="text-right">$10.13</td>
+                                    <td class="text-right">$15.65</td>
+                                    <td class="text-right">$28.57</td>
+                                    <td class="text-right">45.22%</td>
+                                    <td class="text-right">$28.57</td>
+                                    <td class="text-right">-</td>
+                                    <td class="profit-high">High Profit</td>
+                                </tr>
+                                <tr>
+                                    <td>255/55R19</td>
+                                    <td class="text-right">$1.00</td>
+                                    <td class="text-right">$6.50</td>
+                                    <td class="text-right">$11.26</td>
+                                    <td class="text-right">$9.00</td>
+                                    <td class="text-right">-25.11%</td>
+                                    <td class="text-right">$9.00</td>
+                                    <td class="text-right">-</td>
+                                    <td class="profit-low">Critical</td>
+                                </tr>
+                                <tr>
+                                    <td>275/45R20</td>
+                                    <td class="text-right">$5.30</td>
+                                    <td class="text-right">$12.72</td>
+                                    <td class="text-right">$18.40</td>
+                                    <td class="text-right">$25.71</td>
+                                    <td class="text-right">28.43%</td>
+                                    <td class="text-right">$25.71</td>
+                                    <td class="text-right">-</td>
+                                    <td class="profit-medium">Acceptable</td>
+                                </tr>
+                                <tr>
+                                    <td>275/45R21</td>
+                                    <td class="text-right">$5.00</td>
+                                    <td class="text-right">$14.25</td>
+                                    <td class="text-right">$20.10</td>
+                                    <td class="text-right">$28.57</td>
+                                    <td class="text-right">29.65%</td>
+                                    <td class="text-right">$28.57</td>
+                                    <td class="text-right">-</td>
+                                    <td class="profit-medium">Acceptable</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Commercial Tire Analysis -->
+        <div class="tab-panel" role="tabpanel">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Commercial Tire Margin Analysis</h2>
+                    <div class="card-subtitle">After comprehensive cost allocation including all operational costs, financing, and freight</div>
+                </div>
+                <div class="card-content">
+                    <p class="section-note">Commercial tires maintain strong margins even after comprehensive cost allocation. Base costs have been adjusted to achieve target weighted averages for each commercial tire category.</p>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr class="bg-gray-50">
+                                    <th>Size</th>
+                                    <th class="text-right">Base Cost ($)</th>
+                                    <th class="text-right">Freight Cost ($)</th>
+                                    <th class="text-right">Bundling/ Packing ($)</th>
+                                    <th class="text-right">CIF Cost ($)</th>
+                                    <th class="text-right">Operational Cost ($)</th>
+                                    <th class="text-right">Financing Cost ($)</th>
+                                    <th class="text-right">Total Cost ($)</th>
+                                    <th class="text-right">Wholesale Price ($)</th>
+                                    <th class="text-right">Margin (%)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>17.5"</td>
+                                    <td class="text-right">$8.00</td>
+                                    <td class="text-right">$5.00</td>
+                                    <td class="text-right">$0.50</td>
+                                    <td class="text-right">$13.50</td>
+                                    <td class="text-right">$4.74</td>
+                                    <td class="text-right">$1.29</td>
+                                    <td class="text-right">$19.53</td>
+                                    <td class="text-right">$29.85</td>
+                                    <td class="text-right">34.57%</td>
+                                </tr>
+                                <tr>
+                                    <td>19.5"</td>
+                                    <td class="text-right">$11.00</td>
+                                    <td class="text-right">$5.71</td>
+                                    <td class="text-right">$0.75</td>
+                                    <td class="text-right">$17.46</td>
+                                    <td class="text-right">$4.79</td>
+                                    <td class="text-right">$1.49</td>
+                                    <td class="text-right">$23.74</td>
+                                    <td class="text-right">$38.57</td>
+                                    <td class="text-right">38.45%</td>
+                                </tr>
+                                <tr>
+                                    <td>22.5"</td>
+                                    <td class="text-right">$11.50</td>
+                                    <td class="text-right">$10.00</td>
+                                    <td class="text-right">$1.50</td>
+                                    <td class="text-right">$23.00</td>
+                                    <td class="text-right">$5.45</td>
+                                    <td class="text-right">$1.78</td>
+                                    <td class="text-right">$30.23</td>
+                                    <td class="text-right">$75.08</td>
+                                    <td class="text-right">59.74%</td>
+                                </tr>
+                                <tr class="font-bold bg-gray-50">
+                                    <td>Weighted Average</td>
+                                    <td class="text-right">$10.17</td>
+                                    <td class="text-right">$6.90</td>
+                                    <td class="text-right">$0.92</td>
+                                    <td class="text-right">$17.99</td>
+                                    <td class="text-right">$4.99</td>
+                                    <td class="text-right">$1.52</td>
+                                    <td class="text-right">$24.50</td>
+                                    <td class="text-right">$47.83</td>
+                                    <td class="text-right">48.78%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="margin-top: 24px;">
+                        <h3 style="font-size: 16px; margin-bottom: 12px; font-weight: 600;">Commercial Tire Size Analysis</h3>
+                        <div style="overflow-x: auto;">
+                            <table>
+                                <thead>
+                                    <tr class="bg-gray-50">
+                                        <th>Size</th>
+                                        <th class="text-right">Base Cost ($)</th>
+                                        <th class="text-right">CIF Cost ($)</th>
+                                        <th class="text-right">Total Cost ($)</th>
+                                        <th class="text-right">Wholesale Price ($)</th>
+                                        <th class="text-right">Margin (%)</th>
+                                        <th class="text-right">Gambia Price ($)</th>
+                                        <th class="text-right">Senegal Price ($)</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>225/75R17.5</td>
+                                        <td class="text-right">$5.82</td>
+                                        <td class="text-right">$11.32</td>
+                                        <td class="text-right">$17.13</td>
+                                        <td class="text-right">$25.71</td>
+                                        <td class="text-right">33.37%</td>
+                                        <td class="text-right">$25.71</td>
+                                        <td class="text-right">$20.94</td>
+                                        <td class="profit-medium">Acceptable</td>
+                                    </tr>
+                                    <tr>
+                                        <td>235/75R17.5</td>
+                                        <td class="text-right">$5.82</td>
+                                        <td class="text-right">$11.32</td>
+                                        <td class="text-right">$17.13</td>
+                                        <td class="text-right">$25.71</td>
+                                        <td class="text-right">33.37%</td>
+                                        <td class="text-right">$25.71</td>
+                                        <td class="text-right">-</td>
+                                        <td class="profit-medium">Acceptable</td>
+                                    </tr>
+                                    <tr>
+                                        <td>245/70R19.5</td>
+                                        <td class="text-right">$9.58</td>
+                                        <td class="text-right">$16.04</td>
+                                        <td class="text-right">$22.16</td>
+                                        <td class="text-right">$35.71</td>
+                                        <td class="text-right">37.94%</td>
+                                        <td class="text-right">$35.71</td>
+                                        <td class="text-right">-</td>
+                                        <td class="profit-high">High Profit</td>
+                                    </tr>
+                                    <tr>
+                                        <td>285/70R19.5</td>
+                                        <td class="text-right">$11.67</td>
+                                        <td class="text-right">$18.13</td>
+                                        <td class="text-right">$24.42</td>
+                                        <td class="text-right">$40.00</td>
+                                        <td class="text-right">38.95%</td>
+                                        <td class="text-right">$40.00</td>
+                                        <td class="text-right">-</td>
+                                        <td class="profit-high">High Profit</td>
+                                    </tr>
+                                    <tr>
+                                        <td>11R22.5</td>
+                                        <td class="text-right">$9.47</td>
+                                        <td class="text-right">$20.97</td>
+                                        <td class="text-right">$28.19</td>
+                                        <td class="text-right">$69.81</td>
+                                        <td class="text-right">59.62%</td>
+                                        <td class="text-right">$64.29</td>
+                                        <td class="text-right">$69.81</td>
+                                        <td class="profit-high">High Profit</td>
+                                    </tr>
+                                    <tr>
+                                        <td>315/80R22.5</td>
+                                        <td class="text-right">$9.47</td>
+                                        <td class="text-right">$20.97</td>
+                                        <td class="text-right">$27.78</td>
+                                        <td class="text-right">$64.29</td>
+                                        <td class="text-right">56.78%</td>
+                                        <td class="text-right">$64.29</td>
+                                        <td class="text-right">$87.26</td>
+                                        <td class="profit-high">High Profit</td>
+                                    </tr>
+                                    <tr>
+                                        <td>385/65R22.5</td>
+                                        <td class="text-right">$9.47</td>
+                                        <td class="text-right">$20.97</td>
+                                        <td class="text-right">$27.78</td>
+                                        <td class="text-right">$64.29</td>
+                                        <td class="text-right">56.78%</td>
+                                        <td class="text-right">$64.29</td>
+                                        <td class="text-right">$87.26</td>
+                                        <td class="profit-high">High Profit</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cost Structure -->
+        <div class="tab-panel" role="tabpanel">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Comprehensive Cost Structure Analysis</h2>
+                    <div class="card-subtitle">Detailed breakdown of all cost components affecting tire margins</div>
+                </div>
+                <div class="card-content">
+                    <div class="grid-2">
+                        <div>
+                            <h3 style="font-size: 16px; margin-top: 0; font-weight: 600;">Operational Cost Components</h3>
+                            <div style="overflow-x: auto;">
+                                <table>
+                                    <thead>
+                                        <tr class="bg-gray-50">
+                                            <th>Cost Element</th>
+                                            <th class="text-right">Cost/Tire ($)</th>
+                                            <th class="text-right">% of Category</th>
+                                            <th>Notes</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Documentation</td>
+                                            <td class="text-right">$0.080</td>
+                                            <td class="text-right">2.3%</td>
+                                            <td>Fixed per container</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Customs/Duties</td>
+                                            <td class="text-right">$1.000</td>
+                                            <td class="text-right">28.7%</td>
+                                            <td>Large operational component</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Port Charges</td>
+                                            <td class="text-right">$0.320</td>
+                                            <td class="text-right">9.2%</td>
+                                            <td>Fixed per container</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Container Receiving</td>
+                                            <td class="text-right">Variable</td>
+                                            <td class="text-right">3.4-5.8%</td>
+                                            <td>$0.12 (13") to $0.75 (22.5")</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Local Transport</td>
+                                            <td class="text-right">$0.200</td>
+                                            <td class="text-right">5.7%</td>
+                                            <td>Destination delivery costs</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Supplier Visits</td>
+                                            <td class="text-right">$0.450</td>
+                                            <td class="text-right">12.9%</td>
+                                            <td>Quality control costs</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Agent Fee</td>
+                                            <td class="text-right">$0.280</td>
+                                            <td class="text-right">8.0%</td>
+                                            <td>Based on CIF value</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Contingency</td>
+                                            <td class="text-right">$1.300</td>
+                                            <td class="text-right">37.3%</td>
+                                            <td>Risk protection buffer</td>
+                                        </tr>
+                                        <tr class="font-bold bg-gray-50">
+                                            <td>Base Operational Cost</td>
+                                            <td class="text-right">$3.630</td>
+                                            <td class="text-right">100.0%</td>
+                                            <td>Before size/market adjustments</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 style="font-size: 16px; margin-top: 0; font-weight: 600;">Size-Specific Operational Costs</h3>
+                            <div style="overflow-x: auto;">
+                                <table>
+                                    <thead>
+                                        <tr class="bg-gray-50">
+                                            <th>Tire Size Category</th>
+                                            <th class="text-right">Gambia Cost ($)</th>
+                                            <th class="text-right">Senegal Cost ($)</th>
+                                            <th class="text-right">Difference</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>13-14 Inch</td>
+                                            <td class="text-right">$3.62</td>
+                                            <td class="text-right">$3.86</td>
+                                            <td class="text-right">$0.24 (6.6%)</td>
+                                        </tr>
+                                        <tr>
+                                            <td>15-16 Inch</td>
+                                            <td class="text-right">$3.82</td>
+                                            <td class="text-right">$4.07</td>
+                                            <td class="text-right">$0.25 (6.5%)</td>
+                                        </tr>
+                                        <tr>
+                                            <td>17-18 Inch</td>
+                                            <td class="text-right">$4.08</td>
+                                            <td class="text-right">$4.34</td>
+                                            <td class="text-right">$0.26 (6.4%)</td>
+                                        </tr>
+                                        <tr>
+                                            <td>19-20 Inch</td>
+                                            <td class="text-right">$4.49</td>
+                                            <td class="text-right">$4.76</td>
+                                            <td class="text-right">$0.27 (6.0%)</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Commercial Light</td>
+                                            <td class="text-right">$4.74</td>
+                                            <td class="text-right">$5.04</td>
+                                            <td class="text-right">$0.30 (6.3%)</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Commercial Heavy</td>
+                                            <td class="text-right">$5.45</td>
+                                            <td class="text-right">$5.77</td>
+                                            <td class="text-right">$0.32 (5.9%)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 24px;">
+                        <h3 style="font-size: 16px; margin-bottom: 12px; font-weight: 600;">Shipping Cost Analysis by Origin</h3>
+                        <div style="overflow-x: auto;">
+                            <table>
+                                <thead>
+                                    <tr class="bg-gray-50">
+                                        <th>Rim Size</th>
+                                        <th class="text-right">Tires per Container</th>
+                                        <th class="text-right">Asia ($6,000)</th>
+                                        <th class="text-right">America ($4,000)</th>
+                                        <th class="text-right">Europe/ME ($3,000)</th>
+                                        <th class="text-right">Max Difference</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>13-Inch</td>
+                                        <td class="text-right">2,500</td>
+                                        <td class="text-right">$2.40</td>
+                                        <td class="text-right">$1.60</td>
+                                        <td class="text-right">$1.20</td>
+                                        <td class="text-right">$1.20</td>
+                                    </tr>
+                                    <tr>
+                                        <td>14-Inch</td>
+                                        <td class="text-right">2,200</td>
+                                        <td class="text-right">$2.73</td>
+                                        <td class="text-right">$1.82</td>
+                                        <td class="text-right">$1.36</td>
+                                        <td class="text-right">$1.37</td>
+                                    </tr>
+                                    <tr>
+                                        <td>15-Inch</td>
+                                        <td class="text-right">1,800</td>
+                                        <td class="text-right">$3.33</td>
+                                        <td class="text-right">$2.22</td>
+                                        <td class="text-right">$1.67</td>
+                                        <td class="text-right">$1.66</td>
+                                    </tr>
+                                    <tr>
+                                        <td>16-Inch</td>
+                                        <td class="text-right">1,500</td>
+                                        <td class="text-right">$4.00</td>
+                                        <td class="text-right">$2.67</td>
+                                        <td class="text-right">$2.00</td>
+                                        <td class="text-right">$2.00</td>
+                                    </tr>
+                                    <tr>
+                                        <td>17-Inch</td>
+                                        <td class="text-right">1,200</td>
+                                        <td class="text-right">$5.00</td>
+                                        <td class="text-right">$3.33</td>
+                                        <td class="text-right">$2.50</td>
+                                        <td class="text-right">$2.50</td>
+                                    </tr>
+                                    <tr>
+                                        <td>17.5-Inch</td>
+                                        <td class="text-right">800</td>
+                                        <td class="text-right">$7.50</td>
+                                        <td class="text-right">$5.00</td>
+                                        <td class="text-right">$3.75</td>
+                                        <td class="text-right">$3.75</td>
+                                    </tr>
+                                    <tr>
+                                        <td>18-Inch</td>
+                                        <td class="text-right">1,000</td>
+                                        <td class="text-right">$6.00</td>
+                                        <td class="text-right">$4.00</td>
+                                        <td class="text-right">$3.00</td>
+                                        <td class="text-right">$3.00</td>
+                                    </tr>
+                                    <tr>
+                                        <td>19-Inch</td>
+                                        <td class="text-right">800</td>
+                                        <td class="text-right">$7.50</td>
+                                        <td class="text-right">$5.00</td>
+                                        <td class="text-right">$3.75</td>
+                                        <td class="text-right">$3.75</td>
+                                    </tr>
+                                    <tr>
+                                        <td>19.5-Inch</td>
+                                        <td class="text-right">700</td>
+                                        <td class="text-right">$8.57</td>
+                                        <td class="text-right">$5.71</td>
+                                        <td class="text-right">$4.29</td>
+                                        <td class="text-right">$4.28</td>
+                                    </tr>
+                                    <tr>
+                                        <td>20-Inch</td>
+                                        <td class="text-right">600</td>
+                                        <td class="text-right">$10.00</td>
+                                        <td class="text-right">$6.67</td>
+                                        <td class="text-right">$5.00</td>
+                                        <td class="text-right">$5.00</td>
+                                    </tr>
+                                    <tr>
+                                        <td>21-Inch</td>
+                                        <td class="text-right">500</td>
+                                        <td class="text-right">$12.00</td>
+                                        <td class="text-right">$8.00</td>
+                                        <td class="text-right">$6.00</td>
+                                        <td class="text-right">$6.00</td>
+                                    </tr>
+                                    <tr>
+                                        <td>22.5-Inch</td>
+                                        <td class="text-right">400</td>
+                                        <td class="text-right">$15.00</td>
+                                        <td class="text-right">$10.00</td>
+                                        <td class="text-right">$7.50</td>
+                                        <td class="text-right">$7.50</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 24px;">
+                        <h3 style="font-size: 16px; margin-bottom: 12px; font-weight: 600;">Other Cost Components</h3>
+                        <div class="grid-2">
+                            <div>
+                                <h4 style="font-size: 14px; margin-bottom: 8px; font-weight: 600;">Additional Shipping Costs</h4>
+                                <div style="overflow-x: auto;">
+                                    <table>
+                                        <thead>
+                                            <tr class="bg-gray-50">
+                                                <th>Component</th>
+                                                <th class="text-right">Per Tire Cost ($)</th>
+                                                <th>Notes</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Bundling/Packing (13-17")</td>
+                                                <td class="text-right">$0.25</td>
+                                                <td>Fixed cost for smaller tires</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Bundling/Packing (17.5-19")</td>
+                                                <td class="text-right">$0.50</td>
+                                                <td>Increases with tire size</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Bundling/Packing (19.5-20")</td>
+                                                <td class="text-right">$0.75</td>
+                                                <td>Higher for larger tires</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Bundling/Packing (21-22.5")</td>
+                                                <td class="text-right">$1.25-$1.50</td>
+                                                <td>Highest for commercial tires</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 style="font-size: 14px; margin-bottom: 8px; font-weight: 600;">Financing Cost Components</h4>
+                                <div style="overflow-x: auto;">
+                                    <table>
+                                        <thead>
+                                            <tr class="bg-gray-50">
+                                                <th>Component</th>
+                                                <th>Calculation Method</th>
+                                                <th>Market Factors</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Exchange Rate Impact</td>
+                                                <td>2.0% of Wholesale Price</td>
+                                                <td>Senegal: 2.5% vs Gambia: 2.0%</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Letter of Credit Fee</td>
+                                                <td>1.5% of CIF Cost</td>
+                                                <td>Same for both markets</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Bank Interest (90 days)</td>
+                                                <td>8% p.a. of (CIF + Operational)</td>
+                                                <td>Senegal: 8.5% vs Gambia: 8.0%</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Bank Charges</td>
+                                                <td>0.5% of Wholesale Price</td>
+                                                <td>Senegal: 0.6% vs Gambia: 0.5%</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 24px;">
+                        <h3 style="font-size: 16px; margin-bottom: 12px; font-weight: 600;">Cost Structure By Category</h3>
+                        <div style="overflow-x: auto;">
+                            <table>
+                                <thead>
+                                    <tr class="bg-gray-50">
+                                        <th>Tire Category</th>
+                                        <th class="text-right">Base Cost (%)</th>
+                                        <th class="text-right">Freight (%)</th>
+                                        <th class="text-right">Bundling/Packing (%)</th>
+                                        <th class="text-right">Operational (%)</th>
+                                        <th class="text-right">Financing (%)</th>
+                                        <th class="text-right">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>13"</td>
+                                        <td class="text-right">17.4%</td>
+                                        <td class="text-right">22.3%</td>
+                                        <td class="text-right">3.5%</td>
+                                        <td class="text-right">50.5%</td>
+                                        <td class="text-right">6.3%</td>
+                                        <td class="text-right">100.0%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>14"</td>
+                                        <td class="text-right">24.1%</td>
+                                        <td class="text-right">22.0%</td>
+                                        <td class="text-right">3.0%</td>
+                                        <td class="text-right">44.5%</td>
+                                        <td class="text-right">6.4%</td>
+                                        <td class="text-right">100.0%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>15"</td>
+                                        <td class="text-right">26.7%</td>
+                                        <td class="text-right">23.7%</td>
+                                        <td class="text-right">2.7%</td>
+                                        <td class="text-right">40.8%</td>
+                                        <td class="text-right">6.1%</td>
+                                        <td class="text-right">100.0%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>17"</td>
+                                        <td class="text-right">26.8%</td>
+                                        <td class="text-right">29.7%</td>
+                                        <td class="text-right">2.2%</td>
+                                        <td class="text-right">36.4%</td>
+                                        <td class="text-right">4.8%</td>
+                                        <td class="text-right">100.0%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>19"</td>
+                                        <td class="text-right">27.4%</td>
+                                        <td class="text-right">33.4%</td>
+                                        <td class="text-right">3.3%</td>
+                                        <td class="text-right">30.0%</td>
+                                        <td class="text-right">5.8%</td>
+                                        <td class="text-right">100.0%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>22.5" Commercial</td>
+                                        <td class="text-right">38.0%</td>
+                                        <td class="text-right">33.1%</td>
+                                        <td class="text-right">5.0%</td>
+                                        <td class="text-right">18.0%</td>
+                                        <td class="text-right">5.9%</td>
+                                        <td class="text-right">100.0%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Market Comparison -->
+        <div class="tab-panel" role="tabpanel">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Regional Market Comparison</h2>
+                    <div class="card-subtitle">Detailed comparison between Gambia and Senegal markets</div>
+                </div>
+                <div class="card-content">
+                    <p class="section-note">Analysis shows significant operational cost differences and market-specific pricing strategies between Gambia and Senegal. Gambia shows higher margins for commercial tires while Senegal has more competitive pricing for passenger tires.</p>
+
+                    <div class="grid-2">
+                        <div>
+                            <h3 style="font-size: 16px; margin-top: 0; font-weight: 600;">Market Structure Comparison</h3>
+                            <div style="overflow-x: auto;">
+                                <table>
+                                    <thead>
+                                        <tr class="bg-gray-50">
+                                            <th>Factor</th>
+                                            <th>Gambia</th>
+                                            <th>Senegal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Overall Margin</td>
+                                            <td>44.32%</td>
+                                            <td>41.72%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Commercial Focus</td>
+                                            <td>Higher</td>
+                                            <td>Lower</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Passenger Focus</td>
+                                            <td>Lower</td>
+                                            <td>Higher</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Port Costs</td>
+                                            <td>Higher (10-15%)</td>
+                                            <td>Lower</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Operational Costs</td>
+                                            <td>Lower</td>
+                                            <td>Higher (6-7%)</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Customer Segments</td>
+                                            <td>Commercial fleet focused</td>
+                                            <td>Broader retail focus</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Shipping Container Cost</td>
+                                            <td>$200-400 higher</td>
+                                            <td>Lower</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 style="font-size: 16px; margin-top: 0; font-weight: 600;">Market Performance Metrics</h3>
+                            <div style="overflow-x: auto;">
+                                <table>
+                                    <thead>
+                                        <tr class="bg-gray-50">
+                                            <th>Metric</th>
+                                            <th class="text-right">Gambia</th>
+                                            <th class="text-right">Senegal</th>
+                                            <th class="text-right">Differential</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Base Cost %</td>
+                                            <td class="text-right">30.3%</td>
+                                            <td class="text-right">29.7%</td>
+                                            <td class="text-right">+0.6%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Shipping Cost %</td>
+                                            <td class="text-right">35.8%</td>
+                                            <td class="text-right">34.2%</td>
+                                            <td class="text-right">+1.6%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Operational Costs %</td>
+                                            <td class="text-right">28.8%</td>
+                                            <td class="text-right">31.0%</td>
+                                            <td class="text-right">-2.2%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Financing Costs %</td>
+                                            <td class="text-right">5.1%</td>
+                                            <td class="text-right">5.1%</td>
+                                            <td class="text-right">0.0%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Average Margin</td>
+                                            <td class="text-right">44.32%</td>
+                                            <td class="text-right">41.72%</td>
+                                            <td class="text-right">+2.60%</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 24px;">
+                        <h3 style="font-size: 16px; margin-bottom: 12px; font-weight: 600;">Detailed Regional Price Comparison</h3>
+                        <div style="overflow-x: auto;">
+                            <table>
+                                <thead>
+                                    <tr class="bg-gray-50">
+                                        <th>Size</th>
+                                        <th class="text-right">Gambia Price ($)</th>
+                                        <th class="text-right">Senegal Price ($)</th>
+                                        <th class="text-right">Differential (%)</th>
+                                        <th class="text-right">Gambia Margin (%)</th>
+                                        <th class="text-right">Senegal Margin (%)</th>
+                                        <th>Preferred Market</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>155/70R13</td>
+                                        <td class="text-right">$10.00</td>
+                                        <td class="text-right">$8.73</td>
+                                        <td class="text-right">+14.5%</td>
+                                        <td class="text-right">28.3%</td>
+                                        <td class="text-right">17.9%</td>
+                                        <td>Gambia</td>
+                                    </tr>
+                                    <tr>
+                                        <td>185/70R14</td>
+                                        <td class="text-right">$12.86</td>
+                                        <td class="text-right">$10.47</td>
+                                        <td class="text-right">+22.8%</td>
+                                        <td class="text-right">35.5%</td>
+                                        <td class="text-right">20.8%</td>
+                                        <td>Gambia</td>
+                                    </tr>
+                                    <tr>
+                                        <td>195/65R15</td>
+                                        <td class="text-right">$18.14</td>
+                                        <td class="text-right">$10.47</td>
+                                        <td class="text-right">+73.3%</td>
+                                        <td class="text-right">53.7%</td>
+                                        <td class="text-right">19.8%</td>
+                                        <td>Gambia</td>
+                                    </tr>
+                                    <tr>
+                                        <td>205/70R15</td>
+                                        <td class="text-right">$15.71</td>
+                                        <td class="text-right">$22.69</td>
+                                        <td class="text-right">-30.8%</td>
+                                        <td class="text-right">44.5%</td>
+                                        <td class="text-right">51.4%</td>
+                                        <td>Senegal</td>
+                                    </tr>
+                                    <tr>
+                                        <td>225/70R15</td>
+                                        <td class="text-right">$24.28</td>
+                                        <td class="text-right">$17.45</td>
+                                        <td class="text-right">+39.1%</td>
+                                        <td class="text-right">50.2%</td>
+                                        <td class="text-right">17.8%</td>
+                                        <td>Gambia</td>
+                                    </tr>
+                                    <tr>
+                                        <td>225/75R17.5</td>
+                                        <td class="text-right">$23.57</td>
+                                        <td class="text-right">$20.94</td>
+                                        <td class="text-right">+12.6%</td>
+                                        <td class="text-right">27.3%</td>
+                                        <td class="text-right">18.2%</td>
+                                        <td>Gambia</td>
+                                    </tr>
+                                    <tr>
+                                        <td>315/80R22.5</td>
+                                        <td class="text-right">$64.29</td>
+                                        <td class="text-right">$87.26</td>
+                                        <td class="text-right">-26.3%</td>
+                                        <td class="text-right">56.8%</td>
+                                        <td class="text-right">68.2%</td>
+                                        <td>Senegal</td>
+                                    </tr>
+                                    <tr>
+                                        <td>385/65R22.5</td>
+                                        <td class="text-right">$64.29</td>
+                                        <td class="text-right">$87.26</td>
+                                        <td class="text-right">-26.3%</td>
+                                        <td class="text-right">56.8%</td>
+                                        <td class="text-right">68.2%</td>
+                                        <td>Senegal</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 24px;">
+                        <h3 style="font-size: 16px; margin-bottom: 12px; font-weight: 600;">Key Market Insights</h3>
+                        <ul>
+                            <li><strong>Operational Efficiency:</strong> Gambia shows lower operational costs despite higher shipping costs, resulting in a 2.60% higher overall margin.</li>
+                            <li><strong>Market Specialization:</strong> Gambia performs better with small passenger tires (13"-14") and commercial tires, while Senegal shows advantages for mid-range passenger tires.</li>
+                            <li><strong>Price Divergence:</strong> Heavy commercial tires (22.5") show significant price variation between markets, with Senegal commanding 26-36% higher prices.</li>
+                            <li><strong>Container Shipping:</strong> Gambia's container shipping costs are consistently $200-400 higher than Senegal due to port fees and less shipping competition.</li>
+                            <li><strong>Seasonal Factors:</strong> Both markets show similar seasonality patterns, with peak demand during March-May and September-November.</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="margin-top: 24px;" class="grid-2">
+                        <div>
+                            <h3 style="font-size: 16px; margin-bottom: 12px; font-weight: 600;">Gambia Market Strategy</h3>
+                            <div class="recommendation-item">
+                                <div class="recommendation-title">Commercial Focus</div>
+                                <div class="recommendation-desc">Prioritize commercial tire segments (17.5", 19.5", 22.5") which maintain strong 45-55% margins despite higher shipping costs.</div>
+                            </div>
+                            <div class="recommendation-item">
+                                <div class="recommendation-title">Pricing Strategy</div>
+                                <div class="recommendation-desc">Implement tiered pricing for commercial tires and consider premium pricing for sizes with limited competition.</div>
+                            </div>
+                            <div class="recommendation-item">
+                                <div class="recommendation-title">Operational Optimization</div>
+                                <div class="recommendation-desc">Leverage lower operational costs through streamlined processes and direct shipments to major customers.</div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 style="font-size: 16px; margin-bottom: 12px; font-weight: 600;">Senegal Market Strategy</h3>
+                            <div class="recommendation-item">
+                                <div class="recommendation-title">Product Mix</div>
+                                <div class="recommendation-desc">Focus on broader product range covering mid-range passenger tires (16-18") which maintain 25-30% margins.</div>
+                            </div>
+                            <div class="recommendation-item">
+                                <div class="recommendation-title">Competitive Pricing</div>
+                                <div class="recommendation-desc">More competitive pricing required due to market maturity; consider bundle pricing for fleet customers.</div>
+                            </div>
+                            <div class="recommendation-item">
+                                <div class="recommendation-title">Distribution Strategy</div>
+                                <div class="recommendation-desc">Develop stronger distribution network and consider hub-and-spoke model using Senegal as regional distribution center.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="tab-panel" role="tabpanel">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Strategic Recommendations</h2>
+                    <div class="card-subtitle">Actionable insights to maximize profitability across both markets</div>
+                </div>
+                <div class="card-content">
+                    <p class="section-note">The following recommendations are based on comprehensive cost analysis and market-specific trends. Implementation priority is indicated for each recommendation.</p>
+                    
+                    <div style="margin-bottom: 24px;">
+                        <h3 style="font-size: 16px; margin-bottom: 12px; font-weight: 600;">Pricing Optimization</h3>
+                        <div class="recommendation-item">
+                            <div class="recommendation-title">Immediate Price Adjustments</div>
+                            <div class="recommendation-desc">Increase prices for problematic sizes (195/75R16, 215/75R16, 255/55R19) by 25-30% to achieve minimum 10% margins. The 255/55R19 size is particularly critical with a current -25.11% margin and requires immediate action.</div>
+                        </div>
+                        <div class="recommendation-item">
+                            <div class="recommendation-title">Market-Specific Pricing</div>
+                            <div class="recommendation-desc">Implement differential pricing between Gambia and Senegal based on operational costs and competitive dynamics. Maintain premium pricing for commercial tires in Gambia while offering more competitive pricing for passenger tires in Senegal.</div>
+                        </div>
+                        <div class="recommendation-item">
+                            <div class="recommendation-title">Segmented Pricing Strategy</div>
+                            <div class="recommendation-desc">Develop tiered pricing structures for different customer segments, particularly for high-margin commercial tires. Offer volume-based incentives for fleet customers while maintaining premium pricing for individual purchases.</div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 24px;">
+                        <h3 style="font-size: 16px; margin-bottom: 12px; font-weight: 600;">Supply Chain Optimization</h3>
+                        <div class="recommendation-item">
+                            <div class="recommendation-title">Origin-Specific Sourcing</div>
+                            <div class="recommendation-desc">Source all commercial tires (17.5", 19.5", 22.5") from Europe/Middle East to maximize margins by 5.75-7.50%. For passenger tires, source 13"-16" from Europe/Middle East (2.17-3.27% margin improvement) and 17"-21" from America when Europe/Middle East isn't available.</div>
+                        </div>
+                        <div class="recommendation-item">
+                            <div class="recommendation-title">Container Utilization</div>
+                            <div class="recommendation-desc">Implement mixed-size container loading to maximize space and weight utilization. Combine high-margin commercial tires with complementary passenger sizes to optimize overall container profitability.</div>
+                        </div>
+                        <div class="recommendation-item">
+                            <div class="recommendation-title">Seasonal Shipping Strategy</div>
+                            <div class="recommendation-desc">Concentrate shipping during January-March when freight rates are 5-10% lower. Build strategic inventory during these periods to reduce dependency on peak season (August-November) when rates are 10-20% higher.</div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 24px;">
+                        <h3 style="font-size: 16px; margin-bottom: 12px; font-weight: 600;">Inventory Strategy</h3>
+                        <div class="recommendation-item">
+                            <div class="recommendation-title">Focus on High-Margin Categories</div>
+                            <div class="recommendation-desc">Prioritize inventory investment in commercial tire categories (17.5", 19.5", 22.5") which maintain strong 34-60% margins even after comprehensive cost allocation. Within passenger tires, focus on 15", 16", and 19" categories with margins exceeding 35%.</div>
+                        </div>
+                        <div class="recommendation-item">
+                            <div class="recommendation-title">Problem Size Management</div>
+                            <div class="recommendation-desc">Consider gradually phasing out problematic sizes with persistently low margins (below 10%) if price increases aren't viable. Alternatively, negotiate better purchasing terms with suppliers specifically for these sizes.</div>
+                        </div>
+                        <div class="recommendation-item">
+                            <div class="recommendation-title">Regional Inventory Distribution</div>
+                            <div class="recommendation-desc">Allocate commercial tire inventory primarily to Gambia where margins are stronger, while distributing passenger tire inventory with a slight bias toward Senegal for mid-range sizes (15"-17"). Maintain cross-border inventory flexibility to respond to market opportunities.</div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 24px;">
+                        <h3 style="font-size: 16px; margin-bottom: 12px; font-weight: 600;">Operational Improvements</h3>
+                        <div class="recommendation-item">
+                            <div class="recommendation-title">Cost Structure Management</div>
+                            <div class="recommendation-desc">Continue monitoring the balance between bundling/packing costs and contingency. The recent shift of $0.75 from bundling to contingency helps manage risk while maintaining operational efficiency.</div>
+                        </div>
+                        <div class="recommendation-item">
+                            <div class="recommendation-title">Market-Specific Operations</div>
+                            <div class="recommendation-desc">Leverage Gambia's lower operational costs for labor-intensive activities while utilizing Senegal's better port infrastructure for high-volume shipments. Consider establishing a regional hub in Senegal with distribution to Gambia for certain categories.</div>
+                        </div>
+                        <div class="recommendation-item">
+                            <div class="recommendation-title">Efficiency Improvements</div>
+                            <div class="recommendation-desc">Implement operational improvements to reduce handling costs, particularly for commercial tires where margins are strongest. Focus on semi-automated bundling processes and optimized container loading procedures.</div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 style="font-size: 16px; margin-bottom: 12px; font-weight: 600;">Implementation Priorities</h3>
+                        <ol>
+                            <li><strong>Immediate (0-30 days):</strong> Address critical negative margin sizes with price increases (especially 255/55R19)</li>
+                            <li><strong>Short-term (1-3 months):</strong> Implement origin-specific sourcing strategy and begin container optimization</li>
+                            <li><strong>Medium-term (3-6 months):</strong> Develop market-specific inventory distribution and bundling strategies</li>
+                            <li><strong>Long-term (6-12 months):</strong> Establish regional distribution hub and implement comprehensive operational improvements</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // New improved tab handling script
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabPanels = document.querySelectorAll('.tab-panel');
+            
+            // Add click event listener to each tab button
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const tabIndex = parseInt(this.getAttribute('data-tab'));
+                    
+                    // Remove active class from all buttons and panels
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabPanels.forEach(panel => panel.classList.remove('active'));
+                    
+                    // Add active class to current button and corresponding panel
+                    this.classList.add('active');
+                    tabPanels[tabIndex].classList.add('active');
+                });
+            });
+            
+            // Initialize - ensure first tab is active
+            tabButtons[0].classList.add('active');
+            tabPanels[0].classList.add('active');
+        });
+    </script>
+</body>
+</html>
